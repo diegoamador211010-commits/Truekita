@@ -1,0 +1,154 @@
+<resources>
+    <string name="app_name">Truekita</string>
+    <string name="app_logo_placeholder">Logo</string>
+
+    <string name="back">Voltar</string>
+    <string name="notifications">Notificações</string>
+    <string name="home">Início</string>
+    <string name="search">Pesquisa</string>
+    <string name="routes">Rotas</string>
+    <string name="publish">Publicar</string>
+    <string name="chat">Chat</string>
+
+    <string name="login_title">Iniciar Sessão</string>
+    <string name="institutional_email">E-mail institucional</string>
+    <string name="password">Senha</string>
+    <string name="forgot_password">Esqueceu sua senha?</string>
+    <string name="sign_in">Iniciar Sessão</string>
+    <string name="no_account">Não tem uma conta?</string>
+    <string name="create_account">Criar conta</string>
+
+    <string name="search_hint">Pesquisar...</string>
+    <string name="all_caps">TUDO</string>
+    <string name="sale_caps">VENDA</string>
+    <string name="rent_caps">ALUGUEL</string>
+    <string name="exchange_caps">TROCA</string>
+    <string name="transport">Transporte</string>
+
+    <string name="calculator">Calculadora</string>
+    <string name="arduino">Arduino</string>
+    <string name="iphone_charger">Carregador iPhone</string>
+
+    <string name="seller_alexis">Alexis Gallegos</string>
+    <string name="seller_nestor">Nestor Cardona</string>
+    <string name="seller_abraham">Abraham Felix</string>
+    <string name="seller_omar">Omar Andrade</string>
+    <string name="seller_leonardo">Leonardo Ruiz</string>
+    <string name="seller_johan">Johan Alvarez</string>
+
+    <string name="condition_new">Condição: Novo</string>
+    <string name="condition_semi_new">Condição: Semi novo</string>
+
+    <string name="available">Disponível</string>
+    <string name="in_wait">Em espera</string>
+    <string name="busy">Ocupado</string>
+    <string name="send_message">Enviar Mensagem</string>
+
+    <string name="view_route">Ver Rota</string>
+    <string name="request_trip">Solicitar Viagem</string>
+    <string name="add_route">Adicionar rota</string>
+    <string name="driver_omar">Omar Andrade</string>
+    <string name="rating_five_stars">Classificação (5 estrelas)</string>
+    <string name="route_zone_ita">Rota: Zona → ITA</string>
+    <string name="departure_720">Saída: 7:20 AM</string>
+    <string name="three_seats">3 lugares disponíveis</string>
+    <string name="full_route">Rota cheia</string>
+
+    <string name="today">Hoje</string>
+    <string name="yesterday">Ontem</string>
+    <string name="alex_perez">Alex Pérez</string>
+    <string name="natalia_puentes">Natalia Puentes</string>
+    <string name="omar_andrade">Omar Andrade</string>
+    <string name="product_calculator">Produto: Calculadora</string>
+    <string name="transport_720">Transporte - Hora 7:20</string>
+    <string name="transport_650">Transporte - Hora 6:50</string>
+    <string name="accepted">Aceita</string>
+    <string name="full">Cheio</string>
+    <string name="new_message">Nova mensagem...</string>
+
+    <string name="profile">Perfil</string>
+    <string name="settings">Configurações</string>
+    <string name="my_posts">Minhas publicações</string>
+    <string name="my_routes">Minhas rotas</string>
+    <string name="unsubscribe">Inscrever-se</string>
+    <string name="logout">Sair</string>
+    <string name="name_label">Nome</string>
+    <string name="rating">Classificação</string>
+    <string name="active_posts">Publicações Ativas</string>
+    <string name="active_chats">Chats Ativos</string>
+
+    <string name="search_user">Pesquisar Usuário...</string>
+    <string name="administrator">Administrador</string>
+    <string name="chat_1">Chat 1</string>
+    <string name="chat_2">Chat 2</string>
+    <string name="write_message">Escreva algo...</string>
+    <string name="sample_message_1">Olá, como você está? Estou interessado no artigo</string>
+    <string name="sample_message_2">Olá claro que sim, te vejo no ponto de encontro</string>
+    <string name="sample_message_3">Nos vemos lá!!</string>
+    <string name="more_options">Mais opções</string>
+
+    <string name="security_section">SEGURANÇA</string>
+    <string name="support_section">SUPORTE</string>
+    <string name="change_password">Alterar senha</string>
+    <string name="privacy">Privacidade</string>
+    <string name="help">Ajuda</string>
+    <string name="about">Sobre</string>
+
+    <string name="help_center">CENTRO DE AJUDA</string>
+    <string name="find_answers">Encontre respostas</string>
+    <string name="live_support">SUPORTE AO VIVO</string>
+    <string name="real_time_chat">Chat em tempo real</string>
+    <string name="faq">PERGUNTAS FREQUENTES</string>
+    <string name="solve_common_questions">Resolva dúvidas comuns</string>
+    <string name="generate_ticket">GERAR TICKET</string>
+
+    <string name="user_label">Usuário</string>
+    <string name="current_password">Senha atual</string>
+    <string name="new_password">Senha nova</string>
+    <string name="repeat_new_password">Repetir senha nova</string>
+    <string name="forgot_password_small">Esqueceu sua senha?</string>
+
+    <string name="publish_product">Publicar Produto</string>
+    <string name="tap_to_add_image">Toque para adicionar uma imagem</string>
+    <string name="title_hint">Título</string>
+    <string name="product_condition_hint">Condição do produto</string>
+    <string name="product_type_hint">Tipo (venda/aluguel/troca)</string>
+    <string name="product_price_hint">Preço / Aluguel por dia / ocultar</string>
+    <string name="description_hint">Descrição</string>
+    <string name="choose_delivery_zone">Escolher zona de entrega</string>
+    <string name="publish_action">Publicar</string>
+    <string name="review_notice">Todas as publicações são revisadas automaticamente pelo sistema e podem ser avaliadas por um administrador.</string>
+
+    <string name="meeting_points">Pontos de Encontro</string>
+    <string name="map_placeholder_title">Mapa do ITA</string>
+    <string name="map_placeholder_subtitle">Prévia do mapa</string>
+    <string name="select_date">Selecionar Data</string>
+    <string name="select_time">Selecionar Hora</string>
+    <string name="cafeteria">Refeitório</string>
+    <string name="auditorium">Auditório</string>
+    <string name="language_center">Centro de Idiomas</string>
+    <string name="confirm">Confirmar</string>
+
+    <string name="publish_route">Publicar rota</string>
+    <string name="departure_zone">Zona de saída</string>
+    <string name="departure_time">Hora de saída</string>
+    <string name="return_time">Hora de retorno</string>
+    <string name="days_hint">Dias</string>
+    <string name="available_seats_hint">Lugares disponíveis</string>
+    <string name="optional_cost">Custo (opcional)</string>
+    <string name="configure_meeting_points">Configurar pontos de encontro</string>
+    <string name="publish_route_action">Publicar rota</string>
+
+    <string name="configure_meeting_points_title">Configurar pontos de encontro</string>
+    <string name="map_preview">Mapa de referência</string>
+    <string name="route_visual_reference">Prévia da rota e localização</string>
+    <string name="place_name_hint">Nome do lugar</string>
+    <string name="seats_available_hint">Vagas disponíveis</string>
+    <string name="estimated_arrival_hint">Hora de chegada estimada</string>
+    <string name="points_added_progress">Pontos adicionados 2/3</string>
+    <string name="save_points">Salvar Pontos</string>
+
+    <string name="my_route_driver_3">Motorista • 7:20 AM</string>
+    <string name="cancel">Cancelar</string>
+    <string name="edit">Editar</string>
+</resources>

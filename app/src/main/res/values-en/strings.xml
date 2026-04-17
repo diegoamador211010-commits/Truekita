@@ -1,0 +1,165 @@
+<resources>
+    <string name="app_name">Truekita</string>
+    <string name="app_logo_placeholder">Logo</string>
+
+    <string name="back">Back</string>
+    <string name="notifications">Notifications</string>
+    <string name="home">Home</string>
+    <string name="search">Search</string>
+    <string name="routes">Routes</string>
+    <string name="publish">Publish</string>
+    <string name="chat">Chat</string>
+
+    <string name="login_title">Login</string>
+    <string name="institutional_email">Institutional email</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot your password?</string>
+    <string name="sign_in">Sign In</string>
+    <string name="no_account">Don\'t have an account?</string>
+    <string name="create_account">Create account</string>
+
+    <string name="search_hint">Search...</string>
+    <string name="all_caps">ALL</string>
+    <string name="sale_caps">SALE</string>
+    <string name="rent_caps">RENT</string>
+    <string name="exchange_caps">EXCHANGE</string>
+    <string name="transport">Transport</string>
+
+    <string name="calculator">Calculator</string>
+    <string name="arduino">Arduino</string>
+    <string name="iphone_charger">iPhone Charger</string>
+
+    <string name="price_200">$200</string>
+    <string name="price_150">$150</string>
+    <string name="price_120">$120</string>
+    <string name="price_130">$130</string>
+
+    <string name="seller_alexis">Alexis Gallegos</string>
+    <string name="seller_nestor">Nestor Cardona</string>
+    <string name="seller_abraham">Abraham Felix</string>
+    <string name="seller_omar">Omar Andrade</string>
+    <string name="seller_leonardo">Leonardo Ruiz</string>
+    <string name="seller_johan">Johan Alvarez</string>
+
+    <string name="condition_new">Condition: New</string>
+    <string name="condition_semi_new">Condition: Pre-owned</string>
+
+    <string name="available">Available</string>
+    <string name="in_wait">On hold</string>
+    <string name="busy">Busy</string>
+    <string name="send_message">Send Message</string>
+
+    <string name="view_route">View Route</string>
+    <string name="request_trip">Request Trip</string>
+    <string name="add_route">Add route</string>
+    <string name="driver_omar">Omar Andrade</string>
+    <string name="rating_five_stars">Rating (5 stars)</string>
+    <string name="route_zone_ita">Route: Zone → ITA</string>
+    <string name="departure_720">Departure: 7:20 AM</string>
+    <string name="three_seats">3 seats available</string>
+    <string name="full_route">Route full</string>
+
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="alex_perez">Alex Perez</string>
+    <string name="natalia_puentes">Natalia Puentes</string>
+    <string name="omar_andrade">Omar Andrade</string>
+    <string name="product_calculator">Product: Calculator</string>
+    <string name="transport_720">Transport - Time 7:20</string>
+    <string name="transport_650">Transport - Time 6:50</string>
+    <string name="accepted">Accepted</string>
+    <string name="full">Full</string>
+    <string name="new_message">New message...</string>
+
+    <string name="profile">Profile</string>
+    <string name="settings">Settings</string>
+    <string name="my_posts">My posts</string>
+    <string name="my_routes">My routes</string>
+    <string name="unsubscribe">Sign up</string>
+    <string name="logout">Log out</string>
+    <string name="name_label">Name</string>
+    <string name="sample_email">22151111@aguascalientes.tecnm.mx</string>
+    <string name="rating">Rating</string>
+    <string name="active_posts">Active Posts</string>
+    <string name="active_chats">Active Chats</string>
+
+    <string name="search_user">Search User...</string>
+    <string name="administrator">Administrator</string>
+    <string name="chat_1">Chat 1</string>
+    <string name="chat_2">Chat 2</string>
+    <string name="write_message">Write something...</string>
+    <string name="sample_message_1">Hi, how are you? I\'m interested in the item</string>
+    <string name="sample_message_2">Sure, I\'ll see you at the meeting point</string>
+    <string name="sample_message_3">See you there!!</string>
+    <string name="more_options">More options</string>
+
+    <string name="security_section">SECURITY</string>
+    <string name="support_section">SUPPORT</string>
+    <string name="change_password">Change password</string>
+    <string name="privacy">Privacy</string>
+    <string name="help">Help</string>
+    <string name="about">About</string>
+
+    <string name="help_center">HELP CENTER</string>
+    <string name="find_answers">Find answers</string>
+    <string name="live_support">LIVE SUPPORT</string>
+    <string name="real_time_chat">Real-time chat</string>
+    <string name="faq">FAQ</string>
+    <string name="solve_common_questions">Solve common questions</string>
+    <string name="generate_ticket">GENERATE TICKET</string>
+
+    <string name="user_label">User</string>
+    <string name="current_password">Current password</string>
+    <string name="new_password">New password</string>
+    <string name="repeat_new_password">Repeat new password</string>
+    <string name="forgot_password_small">Forgot your password?</string>
+
+    <string name="publish_product">Publish Product</string>
+    <string name="tap_to_add_image">Tap to add an image</string>
+    <string name="title_hint">Title</string>
+    <string name="product_condition_hint">Product condition</string>
+    <string name="product_type_hint">Type (sale/rent/exchange)</string>
+    <string name="product_price_hint">Price / Rent per day / hide</string>
+    <string name="description_hint">Description</string>
+    <string name="choose_delivery_zone">Choose delivery zone</string>
+    <string name="publish_action">Publish</string>
+    <string name="review_notice">All posts are automatically reviewed by the system and may be evaluated by an administrator.</string>
+
+    <string name="meeting_points">Meeting Points</string>
+    <string name="map_placeholder_title">ITA Map</string>
+    <string name="map_placeholder_subtitle">Map preview</string>
+    <string name="select_date">Select Date</string>
+    <string name="select_time">Select Time</string>
+    <string name="cafeteria">Cafeteria</string>
+    <string name="auditorium">Auditorium</string>
+    <string name="language_center">Language Center</string>
+    <string name="confirm">Confirm</string>
+
+    <string name="publish_route">Publish route</string>
+    <string name="departure_zone">Departure zone</string>
+    <string name="departure_time">Departure time</string>
+    <string name="return_time">Return time</string>
+    <string name="days_hint">Days</string>
+    <string name="available_seats_hint">Available seats</string>
+    <string name="optional_cost">Cost (optional)</string>
+    <string name="configure_meeting_points">Configure meeting points</string>
+    <string name="publish_route_action">Publish route</string>
+
+    <string name="configure_meeting_points_title">Configure meeting points</string>
+    <string name="map_preview">Reference map</string>
+    <string name="route_visual_reference">Route and location preview</string>
+    <string name="place_name_hint">Place name</string>
+    <string name="seats_available_hint">Available spots</string>
+    <string name="estimated_arrival_hint">Estimated arrival time</string>
+    <string name="points_added_progress">Points added 2/3</string>
+    <string name="save_points">Save Points</string>
+
+    <string name="my_route_driver_1">Chuy Hernandez • 7:20 AM</string>
+    <string name="my_route_driver_2">Chuy Hernandez • 9:20 AM</string>
+    <string name="my_route_driver_3">Driver • 7:20 AM</string>
+    <string name="my_route_path_1">Route: Zone1 → Zone2 → Zone3 → ITA</string>
+    <string name="my_route_path_2">Route: Puebla’s MM → Tienda el don → La españa → ITA</string>
+    <string name="my_route_path_3">Route: Zone1 → Zone2 → Zone3 → ITA</string>
+    <string name="cancel">Cancel</string>
+    <string name="edit">Edit</string>
+</resources>

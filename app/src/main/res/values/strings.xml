@@ -1,0 +1,168 @@
+<resources>
+    <string name="app_name">Truekita</string>
+    <string name="app_logo_placeholder">Logo</string>
+
+    <string name="back">Regresar</string>
+    <string name="notifications">Notificaciones</string>
+    <string name="home">Inicio</string>
+    <string name="search">Búsqueda</string>
+    <string name="routes">Rutas</string>
+    <string name="publish">Publicar</string>
+    <string name="chat">Chat</string>
+
+    <string name="login_title">Iniciar Sesión</string>
+    <string name="institutional_email">Correo institucional</string>
+    <string name="password">Contraseña</string>
+    <string name="forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="sign_in">Iniciar Sesión</string>
+    <string name="no_account">¿No tienes cuenta?</string>
+    <string name="create_account">Crear cuenta</string>
+
+    <string name="search_hint">Buscar...</string>
+    <string name="all_caps">TODO</string>
+    <string name="sale_caps">VENTA</string>
+    <string name="rent_caps">RENTA</string>
+    <string name="exchange_caps">INTERCAMBIO</string>
+    <string name="transport">Transporte</string>
+
+    <string name="calculator">Calculadora</string>
+    <string name="arduino">Arduino</string>
+    <string name="iphone_charger">Cargador iPhone</string>
+
+    <string name="price_200">$200</string>
+    <string name="price_150">$150</string>
+    <string name="price_120">$120</string>
+    <string name="price_130">$130</string>
+
+    <string name="password_saved_success">¡Contraseña guardada con éxito!</string>
+    <string name="go_to_login">Ir al Login</string>
+
+    <string name="seller_alexis">Alexis Gallegos</string>
+    <string name="seller_nestor">Nestor Cardona</string>
+    <string name="seller_abraham">Abraham Felix</string>
+    <string name="seller_omar">Omar Andrade</string>
+    <string name="seller_leonardo">Leonardo Ruiz</string>
+    <string name="seller_johan">Johan Alvarez</string>
+
+    <string name="condition_new">Condición: Nuevo</string>
+    <string name="condition_semi_new">Condición: Semi nuevo</string>
+
+    <string name="available">Disponible</string>
+    <string name="in_wait">En espera</string>
+    <string name="busy">Ocupado</string>
+    <string name="send_message">Enviar Mensaje</string>
+
+    <string name="view_route">Ver Ruta</string>
+    <string name="request_trip">Solicitar Viaje</string>
+    <string name="add_route">Agregar ruta</string>
+    <string name="driver_omar">Omar Andrade</string>
+    <string name="rating_five_stars">Calificación (5 estrellas)</string>
+    <string name="route_zone_ita">Ruta: Zona → ITA</string>
+    <string name="departure_720">Salida: 7:20 AM</string>
+    <string name="three_seats">3 lugares disponibles</string>
+    <string name="full_route">Ruta llena</string>
+
+    <string name="today">Hoy</string>
+    <string name="yesterday">Ayer</string>
+    <string name="alex_perez">Alex Pérez</string>
+    <string name="natalia_puentes">Natalia Puentes</string>
+    <string name="omar_andrade">Omar Andrade</string>
+    <string name="product_calculator">Producto: Calculadora</string>
+    <string name="transport_720">Transporte - Hora 7:20</string>
+    <string name="transport_650">Transporte - Hora 6:50</string>
+    <string name="accepted">Aceptada</string>
+    <string name="full">Lleno</string>
+    <string name="new_message">Mensaje nuevo...</string>
+
+    <string name="profile">Perfil</string>
+    <string name="settings">Configuración</string>
+    <string name="my_posts">Mis publicaciones</string>
+    <string name="my_routes">Mis rutas</string>
+    <string name="unsubscribe">Darse de alta</string>
+    <string name="logout">Cerrar sesión</string>
+    <string name="name_label">Nombre</string>
+    <string name="sample_email">22151111@aguascalientes.tecnm.mx</string>
+    <string name="rating">Calificación</string>
+    <string name="active_posts">Publicaciones Activas</string>
+    <string name="active_chats">Chats Activos</string>
+
+    <string name="search_user">Buscar Usuario...</string>
+    <string name="administrator">Administrador</string>
+    <string name="chat_1">Chat 1</string>
+    <string name="chat_2">Chat 2</string>
+    <string name="write_message">Escribe algo...</string>
+    <string name="sample_message_1">Hola, ¿Cómo estás?, me interesa el artículo</string>
+    <string name="sample_message_2">Hola claro que sí, te veo en el punto de encuentro</string>
+    <string name="sample_message_3">Nos vemos ahí!!</string>
+    <string name="more_options">Más opciones</string>
+
+    <string name="security_section">SEGURIDAD</string>
+    <string name="support_section">SOPORTE</string>
+    <string name="change_password">Cambiar contraseña</string>
+    <string name="privacy">Privacidad</string>
+    <string name="help">Ayuda</string>
+    <string name="about">Acerca de</string>
+
+    <string name="help_center">CENTRO DE AYUDA</string>
+    <string name="find_answers">Encuentra respuestas</string>
+    <string name="live_support">SOPORTE EN VIVO</string>
+    <string name="real_time_chat">Chat en tiempo real</string>
+    <string name="faq">PREGUNTAS FRECUENTES</string>
+    <string name="solve_common_questions">Resuelve dudas comunes</string>
+    <string name="generate_ticket">GENERAR TICKET</string>
+
+    <string name="user_label">Usuario</string>
+    <string name="current_password">Contraseña actual</string>
+    <string name="new_password">Contraseña nueva</string>
+    <string name="repeat_new_password">Repetir contraseña nueva</string>
+    <string name="forgot_password_small">¿Olvidaste tu contraseña?</string>
+
+    <string name="publish_product">Publicar Producto</string>
+    <string name="tap_to_add_image">Pulsa para agregar una imagen</string>
+    <string name="title_hint">Título</string>
+    <string name="product_condition_hint">Condición del producto</string>
+    <string name="product_type_hint">Tipo (venta/renta/intercambio)</string>
+    <string name="product_price_hint">Precio / Renta por día / ocultar</string>
+    <string name="description_hint">Descripción</string>
+    <string name="choose_delivery_zone">Elegir zona de entrega</string>
+    <string name="publish_action">Publicar</string>
+    <string name="review_notice">Todas las publicaciones son revisadas automáticamente por el sistema y pueden ser evaluadas por un administrador.</string>
+
+    <string name="meeting_points">Puntos de Encuentro</string>
+    <string name="map_placeholder_title">Mapa del ITA</string>
+    <string name="map_placeholder_subtitle">Vista previa del mapa</string>
+    <string name="select_date">Seleccionar Fecha</string>
+    <string name="select_time">Seleccionar Hora</string>
+    <string name="cafeteria">Cafetería</string>
+    <string name="auditorium">Auditorio</string>
+    <string name="language_center">Centro de Idiomas</string>
+    <string name="confirm">Confirmar</string>
+
+    <string name="publish_route">Publicar ruta</string>
+    <string name="departure_zone">Zona de salida</string>
+    <string name="departure_time">Hora salida</string>
+    <string name="return_time">Hora regreso</string>
+    <string name="days_hint">Días</string>
+    <string name="available_seats_hint">Lugares disponibles</string>
+    <string name="optional_cost">Costo (opcional)</string>
+    <string name="configure_meeting_points">Configurar puntos de encuentro</string>
+    <string name="publish_route_action">Publicar ruta</string>
+
+    <string name="configure_meeting_points_title">Configurar puntos de encuentro</string>
+    <string name="map_preview">Mapa de referencia</string>
+    <string name="route_visual_reference">Vista previa de la ruta y ubicación</string>
+    <string name="place_name_hint">Nombre del lugar</string>
+    <string name="seats_available_hint">Cupos disponibles</string>
+    <string name="estimated_arrival_hint">Hora de llegada estimada</string>
+    <string name="points_added_progress">Puntos agregados 2/3</string>
+    <string name="save_points">Guardar Puntos</string>
+
+    <string name="my_route_driver_1">Chuy Hernandez • 7:20 AM</string>
+    <string name="my_route_driver_2">Chuy Hernandez • 9:20 AM</string>
+    <string name="my_route_driver_3">Conductor • 7:20 AM</string>
+    <string name="my_route_path_1">Ruta: Zona1 → Zona2 → Zona3 → ITA</string>
+    <string name="my_route_path_2">Ruta: Puebla’s MM → Tienda el don → La españa → ITA</string>
+    <string name="my_route_path_3">Ruta: Zona1 → Zona2 → Zona3 → ITA</string>
+    <string name="cancel">Cancelar</string>
+    <string name="edit">Editar</string>
+</resources>
