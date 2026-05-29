@@ -1,114 +1,325 @@
 package com.example.truekita.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.AttachMoney
+import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource // IMPORTANTE
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.example.truekita.R
 import com.example.truekita.components.BottomNavBar
-import com.example.truekita.navigation.Screen
+import com.google.firebase.firestore.FirebaseFirestore
+
+data class ProductoDetalleDb(
+    val id: String = "",
+    val titulo: String = "",
+    val condicion: String = "",
+    val tipo: String = "",
+    val precio: String = "",
+    val zonaEntrega: String = "",
+    val imagenUrl: String = "",
+    val vendedorCorreo: String = "",
+    val estado: String = ""
+)
 
 @Composable
-fun ProductDetailScreen(navController: NavController, productTitle: String) {
-    // Obtenemos las versiones traducidas de los nombres para la comparación
-    val calcName = stringResource(id = R.string.calculator)
-    val arduinoName = stringResource(id = R.string.arduino)
-    val chargerName = stringResource(id = R.string.iphone_charger)
+fun ProductDetailScreen(
+    navController: NavController,
+    productId: String
+) {
+    val db = FirebaseFirestore.getInstance()
 
-    // SIMULACIÓN DE DATOS (Filtramos según el título traducido)
-    val (price, seller, imageRes, type) = when (productTitle) {
-        calcName -> listOf(stringResource(R.string.price_200), stringResource(R.string.seller_alexis), R.drawable.calculadora, stringResource(R.string.sale_caps))
-        arduinoName -> listOf(stringResource(R.string.price_150), stringResource(R.string.seller_nestor), R.drawable.arduino, stringResource(R.string.exchange_caps))
-        chargerName -> listOf(stringResource(R.string.price_120), stringResource(R.string.seller_abraham), R.drawable.cargador_iphone, stringResource(R.string.rent_caps))
-        else -> listOf("---", "Usuario ITA", R.drawable.placeholder, "---")
+    var producto by remember { mutableStateOf<ProductoDetalleDb?>(null) }
+    var cargando by remember { mutableStateOf(true) }
+    var error by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(productId) {
+        if (productId.isBlank()) {
+            cargando = false
+            error = "Producto no encontrado"
+            return@LaunchedEffect
+        }
+
+        db.collection("productos")
+            .document(productId)
+            .get()
+            .addOnSuccessListener { document ->
+                if (document.exists()) {
+                    producto = ProductoDetalleDb(
+                        id = document.getString("id") ?: document.id,
+                        titulo = document.getString("titulo") ?: "",
+                        condicion = document.getString("condicion") ?: "",
+                        tipo = document.getString("tipo") ?: "",
+                        precio = document.getString("precio") ?: "",
+                        zonaEntrega = document.getString("zonaEntrega") ?: "",
+                        imagenUrl = document.getString("imagenUrl") ?: "",
+                        vendedorCorreo = document.getString("vendedorCorreo") ?: "",
+                        estado = document.getString("estado") ?: "disponible"
+                    )
+                } else {
+                    error = "El producto ya no existe"
+                }
+
+                cargando = false
+            }
+            .addOnFailureListener { e ->
+                error = "Error al cargar producto: ${e.message}"
+                cargando = false
+            }
     }
 
     Scaffold(
-        bottomBar = { BottomNavBar(navController) }
+        bottomBar = {
+            BottomNavBar(navController)
+        }
     ) { padding ->
+
         Column(
-            modifier = Modifier.fillMaxSize().padding(padding).background(Color(0xFFE3F2FD)).padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .background(Color(0xFFE3F2FD))
         ) {
-            // Header Internacionalizado
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = stringResource(id = R.string.back))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = {
+                        navController.popBackStack()
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = stringResource(id = R.string.back)
+                    )
                 }
+
                 Text(
-                    text = stringResource(id = R.string.more_options), // O una etiqueta de "Detalle"
+                    text = "Detalle del producto",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center
                 )
-                Spacer(Modifier.width(48.dp))
+
+                Spacer(modifier = Modifier.width(48.dp))
             }
 
-            // Imagen
-            Card(Modifier.fillMaxWidth().height(180.dp).padding(vertical = 10.dp), shape = RoundedCornerShape(16.dp)) {
-                Image(painter = painterResource(id = imageRes as Int), contentDescription = null, Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
-            }
-
-            // Nombre del Producto (Ya viene dinámico)
-            DetailBox(text = "${stringResource(id = R.string.product_calculator).split(":")[0]}: $productTitle")
-
-            // Estado y Tipo (VENTA/RENTA/INTERCAMBIO)
-            Card(Modifier.fillMaxWidth().padding(vertical = 8.dp), colors = CardDefaults.cardColors(containerColor = Color.White)) {
-                Column(Modifier.padding(16.dp)) {
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
-                        Text(stringResource(id = R.string.available), fontSize = 12.sp, color = Color.Gray)
-                        Spacer(Modifier.width(6.dp)); Box(Modifier.size(10.dp).background(Color(0xFF81C784), CircleShape))
-                    }
-                    Surface(Modifier.align(Alignment.CenterHorizontally), color = Color(0xFFE0E0E0), shape = RoundedCornerShape(4.dp)) {
-                        Text(type as String, Modifier.padding(horizontal = 20.dp, vertical = 6.dp), fontWeight = FontWeight.Bold)
+            when {
+                cargando -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
                     }
                 }
-            }
 
-            Text("${stringResource(id = R.string.name_label)}: $seller", fontWeight = FontWeight.Bold)
-            Text("${stringResource(id = R.string.rating)}: $price", color = Color(0xFF1976D2), fontSize = 18.sp)
+                error != null -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = error ?: "Error desconocido",
+                            color = Color.Red,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+                }
 
-            // Estrellas
-            Row(Modifier.padding(vertical = 8.dp)) {
-                repeat(5) { Icon(Icons.Default.Star, null, tint = Color(0xFFFFD600), modifier = Modifier.size(28.dp)) }
-            }
+                producto != null -> {
+                    val item = producto!!
 
-            Spacer(Modifier.weight(1f))
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(horizontal = 16.dp)
+                            .padding(bottom = 24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(260.dp),
+                            shape = RoundedCornerShape(18.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color.White
+                            )
+                        ) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                if (item.imagenUrl.isNotBlank()) {
+                                    AsyncImage(
+                                        model = item.imagenUrl,
+                                        contentDescription = item.titulo,
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                } else {
+                                    Icon(
+                                        imageVector = Icons.Default.Image,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(70.dp),
+                                        tint = Color.Gray
+                                    )
+                                }
+                            }
+                        }
 
-            // Botón Mandar Mensaje Internacionalizado
-            Button(
-                onClick = { navController.navigate(Screen.ChatList.route) },
-                modifier = Modifier.fillMaxWidth().height(55.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA5F0B5)),
-                shape = RoundedCornerShape(25.dp)
-            ) {
-                Text(stringResource(id = R.string.send_message), color = Color.Black, fontWeight = FontWeight.Bold)
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(18.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color.White
+                            )
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(18.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.End,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = item.estado.ifBlank { "disponible" },
+                                        fontSize = 13.sp,
+                                        color = Color.Gray
+                                    )
+
+                                    Spacer(modifier = Modifier.width(6.dp))
+
+                                    Box(
+                                        modifier = Modifier
+                                            .size(10.dp)
+                                            .background(Color(0xFF81C784), CircleShape)
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
+                                Text(
+                                    text = item.titulo.ifBlank { "Sin título" },
+                                    fontSize = 24.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black
+                                )
+
+                                Spacer(modifier = Modifier.height(14.dp))
+
+                                ProductDetailRow(
+                                    icon = Icons.Default.AttachMoney,
+                                    label = "Precio",
+                                    value = item.precio.ifBlank { "Sin precio" }
+                                )
+
+                                ProductDetailRow(
+                                    icon = Icons.Default.Info,
+                                    label = "Condición",
+                                    value = item.condicion.ifBlank { "Sin condición" }
+                                )
+
+                                ProductDetailRow(
+                                    icon = Icons.Default.Category,
+                                    label = "Tipo de producto",
+                                    value = item.tipo.ifBlank { "Sin tipo" }
+                                )
+
+                                ProductDetailRow(
+                                    icon = Icons.Default.Place,
+                                    label = "Zona de entrega",
+                                    value = item.zonaEntrega.ifBlank { "Sin zona de entrega" }
+                                )
+
+                                ProductDetailRow(
+                                    icon = Icons.Default.Person,
+                                    label = "Publicado por",
+                                    value = item.vendedorCorreo.ifBlank { "Usuario TRUEKITA" }
+                                )
+
+                                ProductDetailRow(
+                                    icon = Icons.Default.CheckCircle,
+                                    label = "Estado",
+                                    value = item.estado.ifBlank { "disponible" }
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(24.dp))
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-fun DetailBox(text: String) {
-    Surface(Modifier.fillMaxWidth().padding(vertical = 4.dp), color = Color(0xFFE0E0E0), shape = RoundedCornerShape(8.dp)) {
-        Text(text, Modifier.padding(12.dp), textAlign = TextAlign.Center)
+fun ProductDetailRow(
+    icon: ImageVector,
+    label: String,
+    value: String
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 7.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = Color(0xFF0D47A1),
+            modifier = Modifier.size(22.dp)
+        )
+
+        Spacer(modifier = Modifier.width(10.dp))
+
+        Column {
+            Text(
+                text = label,
+                fontSize = 12.sp,
+                color = Color.Gray
+            )
+
+            Text(
+                text = value,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.Black
+            )
+        }
     }
 }

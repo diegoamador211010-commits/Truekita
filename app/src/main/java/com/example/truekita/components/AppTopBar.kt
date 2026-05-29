@@ -2,7 +2,6 @@ package com.example.truekita.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -19,6 +18,7 @@ fun AppTopBar(
     title: String,
     showBack: Boolean = false,
     showNotification: Boolean = true,
+    pendingNotifications: Int = 0,
     onBackClick: () -> Unit = {},
     onNotificationClick: () -> Unit = {}
 ) {
@@ -42,8 +42,8 @@ fun AppTopBar(
         actions = {
             if (showNotification) {
                 IconButton(onClick = onNotificationClick) {
-                    Icon(
-                        imageVector = Icons.Filled.Notifications,
+                    NotificationBadgeIcon(
+                        pendingCount = pendingNotifications,
                         contentDescription = stringResource(R.string.notifications)
                     )
                 }

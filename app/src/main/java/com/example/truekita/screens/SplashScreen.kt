@@ -2,7 +2,12 @@ package com.example.truekita.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -13,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -20,20 +26,75 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.truekita.R
+import com.example.truekita.biometric.BiometricPreferenceManager
 import com.example.truekita.navigation.Screen
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(
     navController: NavController
 ) {
-    // Temporizador para saltar al Login
+    val context = LocalContext.current
+
     LaunchedEffect(Unit) {
-        delay(1800) // 1.8 segundos de gloria para tu logo
-        navController.navigate(Screen.Login.route) {
-            // Limpiamos el Splash del historial para que no se pueda regresar
-            popUpTo(Screen.Splash.route) { inclusive = true }
+        delay(1800)
+
+        val auth = FirebaseAuth.getInstance()
+        val db = FirebaseFirestore.getInstance()
+        val user = auth.currentUser
+
+        if (user == null) {
+            navController.navigate(Screen.Login.route) {
+                popUpTo(Screen.Splash.route) {
+                    inclusive = true
+                }
+            }
+            return@LaunchedEffect
         }
+
+        db.collection("usuarios")
+            .document(user.uid)
+            .get()
+            .addOnSuccessListener { document ->
+
+                val rol = document.getString("rol") ?: "usuario"
+                val biometricEnabled = BiometricPreferenceManager.isBiometricEnabled(context)
+
+                when {
+                    rol == "admin" -> {
+                        navController.navigate(Screen.AdminHome.route) {
+                            popUpTo(Screen.Splash.route) {
+                                inclusive = true
+                            }
+                        }
+                    }
+
+                    biometricEnabled -> {
+                        navController.navigate(Screen.BiometricLogin.route) {
+                            popUpTo(Screen.Splash.route) {
+                                inclusive = true
+                            }
+                        }
+                    }
+
+                    else -> {
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(Screen.Splash.route) {
+                                inclusive = true
+                            }
+                        }
+                    }
+                }
+            }
+            .addOnFailureListener {
+                navController.navigate(Screen.Login.route) {
+                    popUpTo(Screen.Splash.route) {
+                        inclusive = true
+                    }
+                }
+            }
     }
 
     Surface(
@@ -54,7 +115,6 @@ fun SplashScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Contenedor del Logo con efecto traslúcido
             Box(
                 modifier = Modifier
                     .size(160.dp)
@@ -74,7 +134,6 @@ fun SplashScreen(
 
             Spacer(modifier = Modifier.size(24.dp))
 
-            // Nombre de la App desde el strings.xml
             Text(
                 text = stringResource(id = R.string.app_name),
                 style = MaterialTheme.typography.headlineLarge,

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "501024759809",
+    "project_id": "truekita-9e02d",
+    "storage_bucket": "truekita-9e02d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:501024759809:android:f65d4679df6d47a0c06000",
+        "android_client_info": {
+          "package_name": "com.example.truekita"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyANtPQ8vvXjBnihPW-Gu2qWjI8ZeURNIzc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

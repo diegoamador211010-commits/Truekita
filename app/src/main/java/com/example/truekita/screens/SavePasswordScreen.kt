@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.truekita.R
+import com.example.truekita.navigation.Screen
 
 @Composable
 fun SavePasswordScreen(navController: NavController) {
@@ -32,7 +33,6 @@ fun SavePasswordScreen(navController: NavController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // --- ICONO DE ÉXITO VISUAL ---
         Surface(
             modifier = Modifier.size(100.dp),
             shape = CircleShape,
@@ -50,7 +50,6 @@ fun SavePasswordScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // --- TEXTO TRADUCIDO ---
         Text(
             text = stringResource(id = R.string.password_saved_success),
             style = MaterialTheme.typography.headlineMedium,
@@ -61,19 +60,21 @@ fun SavePasswordScreen(navController: NavController) {
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        // --- BOTÓN IR AL LOGIN (Ruta corregida) ---
         Button(
             onClick = {
-                // Usamos la ruta como String para evitar errores de referencia
-                navController.navigate("login_screen") {
-                    popUpTo("login_screen") { inclusive = true }
+                navController.navigate(Screen.Login.route) {
+                    popUpTo(0) {
+                        inclusive = true
+                    }
                 }
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(55.dp),
             shape = RoundedCornerShape(25.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0D47A1))
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF0D47A1)
+            )
         ) {
             Text(
                 text = stringResource(id = R.string.go_to_login),
