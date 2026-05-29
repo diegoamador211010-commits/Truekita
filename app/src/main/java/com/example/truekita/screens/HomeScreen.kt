@@ -37,7 +37,6 @@ import com.example.truekita.navigation.Screen
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 
 data class ProductoHomeDb(
@@ -50,7 +49,8 @@ data class ProductoHomeDb(
     val imagenUrl: String = "",
     val vendedorUid: String = "",
     val vendedorCorreo: String = "",
-    val estado: String = ""
+    val estado: String = "",
+    val estadoRevision: String = ""
 )
 
 @Composable
@@ -110,7 +110,8 @@ fun HomeScreen(
 
     DisposableEffect(Unit) {
         val listener = db.collection("productos")
-            .orderBy("fechaPublicacion", Query.Direction.DESCENDING)
+            .whereEqualTo("estadoRevision", "aceptada")
+            .whereEqualTo("estado", "disponible")
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     cargandoProductos = false
@@ -124,20 +125,25 @@ fun HomeScreen(
                     return@addSnapshotListener
                 }
 
-                productos = snapshot?.documents?.map { document ->
-                    ProductoHomeDb(
-                        id = document.getString("id") ?: document.id,
-                        titulo = document.getString("titulo") ?: "",
-                        condicion = document.getString("condicion") ?: "",
-                        tipo = document.getString("tipo") ?: "",
-                        precio = document.getString("precio") ?: "",
-                        zonaEntrega = document.getString("zonaEntrega") ?: "",
-                        imagenUrl = document.getString("imagenUrl") ?: "",
-                        vendedorUid = document.getString("vendedorUid") ?: "",
-                        vendedorCorreo = document.getString("vendedorCorreo") ?: "",
-                        estado = document.getString("estado") ?: "disponible"
-                    )
-                } ?: emptyList()
+                productos = snapshot?.documents
+                    ?.sortedByDescending { document ->
+                        document.getTimestamp("fechaPublicacion")?.toDate()?.time ?: 0L
+                    }
+                    ?.map { document ->
+                        ProductoHomeDb(
+                            id = document.getString("id") ?: document.id,
+                            titulo = document.getString("titulo") ?: "",
+                            condicion = document.getString("condicion") ?: "",
+                            tipo = document.getString("tipo") ?: "",
+                            precio = document.getString("precio") ?: "",
+                            zonaEntrega = document.getString("zonaEntrega") ?: "",
+                            imagenUrl = document.getString("imagenUrl") ?: "",
+                            vendedorUid = document.getString("vendedorUid") ?: "",
+                            vendedorCorreo = document.getString("vendedorCorreo") ?: "",
+                            estado = document.getString("estado") ?: "disponible",
+                            estadoRevision = document.getString("estadoRevision") ?: ""
+                        )
+                    } ?: emptyList()
 
                 cargandoProductos = false
             }
@@ -306,7 +312,7 @@ fun HomeScreen(
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
-                                        text = "Aún no hay productos publicados",
+                                        text = "Aún no hay productos aprobados por el bot",
                                         color = Color.Gray,
                                         fontSize = 16.sp
                                     )

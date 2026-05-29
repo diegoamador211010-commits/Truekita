@@ -29,7 +29,10 @@ import com.example.truekita.components.AppTopBar
 import com.example.truekita.components.BottomNavBar
 import com.example.truekita.components.FilterChipButton
 import com.example.truekita.navigation.Screen
+import com.google.firebase.Timestamp
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import java.text.Normalizer
 import java.util.Locale
 
@@ -45,13 +48,15 @@ data class SearchProductDb(
     val imagenUrl: String = "",
     val vendedorUid: String = "",
     val vendedorCorreo: String = "",
-    val estado: String = ""
+    val estado: String = "",
+    val estadoRevision: String = ""
 )
 
 @Composable
 fun SearchScreen(navController: NavController) {
     val context = LocalContext.current
     val db = FirebaseFirestore.getInstance()
+    val auth = FirebaseAuth.getInstance()
 
     val saleFilter = stringResource(id = R.string.sale_caps)
     val rentFilter = stringResource(id = R.string.rent_caps)
@@ -66,6 +71,8 @@ fun SearchScreen(navController: NavController) {
 
     DisposableEffect(Unit) {
         val listener = db.collection("productos")
+            .whereEqualTo("estadoRevision", "aceptada")
+            .whereEqualTo("estado", "disponible")
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     loading = false
@@ -97,7 +104,8 @@ fun SearchScreen(navController: NavController) {
                             imagenUrl = document.getString("imagenUrl") ?: "",
                             vendedorUid = document.getString("vendedorUid") ?: "",
                             vendedorCorreo = document.getString("vendedorCorreo") ?: "",
-                            estado = document.getString("estado") ?: "disponible"
+                            estado = document.getString("estado") ?: "disponible",
+                            estadoRevision = document.getString("estadoRevision") ?: ""
                         )
                     } ?: emptyList()
 
@@ -109,6 +117,71 @@ fun SearchScreen(navController: NavController) {
         }
     }
 
+    fun abrirOCrearChatConVendedor(product: SearchProductDb) {
+        val usuarioActual = auth.currentUser
+
+        if (usuarioActual == null) {
+            Toast.makeText(
+                context,
+                "Debes iniciar sesión para enviar mensaje",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+
+        if (product.vendedorUid.isBlank()) {
+            Toast.makeText(
+                context,
+                "Este producto no tiene vendedor asignado",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+
+        if (product.vendedorUid == usuarioActual.uid) {
+            Toast.makeText(
+                context,
+                "Este producto es tuyo",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+
+        val uidActual = usuarioActual.uid
+        val nombreActual = usuarioActual.displayName ?: usuarioActual.email ?: "Usuario"
+        val nombreVendedor = product.vendedorCorreo.ifBlank { "Vendedor" }
+
+        val chatId = listOf(uidActual, product.vendedorUid)
+            .sorted()
+            .joinToString("_")
+
+        val chatData = hashMapOf(
+            "participantes" to listOf(uidActual, product.vendedorUid),
+            "participantesNombres" to mapOf(
+                uidActual to nombreActual,
+                product.vendedorUid to nombreVendedor
+            ),
+            "ultimoMensaje" to "",
+            "fechaUltimoMensaje" to Timestamp.now()
+        )
+
+        db.collection("chats")
+            .document(chatId)
+            .set(chatData, SetOptions.merge())
+            .addOnSuccessListener {
+                navController.navigate(
+                    "${Screen.ChatDetail.route}/$chatId/${Uri.encode(nombreVendedor)}"
+                )
+            }
+            .addOnFailureListener { error ->
+                Toast.makeText(
+                    context,
+                    "Error al abrir chat: ${error.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+    }
+
     val filteredProducts = remember(searchQuery, selectedSearchFilter, products) {
         val query = normalizeSearchText(searchQuery)
 
@@ -117,8 +190,7 @@ fun SearchScreen(navController: NavController) {
             val selectedType = normalizeSearchText(selectedSearchFilter)
 
             val matchesFilter =
-                selectedSearchFilter == "TODO" ||
-                        productType == selectedType
+                selectedSearchFilter == "TODO" || productType == selectedType
 
             val matchesSearch =
                 query.isBlank() || productMatchesSearch(product, query)
@@ -260,7 +332,7 @@ fun SearchScreen(navController: NavController) {
                     products.isEmpty() -> {
                         item {
                             Text(
-                                text = "No hay productos publicados en Firebase.",
+                                text = "No hay productos aprobados por el bot.",
                                 modifier = Modifier.padding(16.dp),
                                 color = Color.Gray
                             )
@@ -270,7 +342,7 @@ fun SearchScreen(navController: NavController) {
                     searchQuery.isBlank() && selectedSearchFilter == "TODO" -> {
                         item {
                             Text(
-                                text = "Busca productos por nombre, tipo, condición o palabras relacionadas.",
+                                text = "Busca productos aprobados por nombre, tipo, condición o palabras relacionadas.",
                                 modifier = Modifier.padding(16.dp),
                                 color = Color.Gray
                             )
@@ -297,7 +369,7 @@ fun SearchScreen(navController: NavController) {
                                     )
                                 },
                                 onMessageClick = {
-                                    navController.navigate(Screen.ChatList.route)
+                                    abrirOCrearChatConVendedor(product)
                                 }
                             )
                         }
@@ -439,6 +511,7 @@ fun productMatchesSearch(
             product.fechaEntrega,
             product.horaEntrega,
             product.estado,
+            product.estadoRevision,
             product.vendedorCorreo,
             getRelatedWordsForProduct(product.titulo)
         ).joinToString(" ")

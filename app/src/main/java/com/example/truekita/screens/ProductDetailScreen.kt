@@ -42,7 +42,9 @@ data class ProductoDetalleDb(
     val zonaEntrega: String = "",
     val imagenUrl: String = "",
     val vendedorCorreo: String = "",
-    val estado: String = ""
+    val estado: String = "",
+    val estadoRevision: String = "",
+    val motivoRechazo: String = ""
 )
 
 @Composable
@@ -68,17 +70,44 @@ fun ProductDetailScreen(
             .get()
             .addOnSuccessListener { document ->
                 if (document.exists()) {
-                    producto = ProductoDetalleDb(
-                        id = document.getString("id") ?: document.id,
-                        titulo = document.getString("titulo") ?: "",
-                        condicion = document.getString("condicion") ?: "",
-                        tipo = document.getString("tipo") ?: "",
-                        precio = document.getString("precio") ?: "",
-                        zonaEntrega = document.getString("zonaEntrega") ?: "",
-                        imagenUrl = document.getString("imagenUrl") ?: "",
-                        vendedorCorreo = document.getString("vendedorCorreo") ?: "",
-                        estado = document.getString("estado") ?: "disponible"
-                    )
+                    val estadoRevision = document.getString("estadoRevision") ?: ""
+                    val estadoProducto = document.getString("estado") ?: "disponible"
+
+                    if (estadoRevision != "aceptada") {
+                        error = when (estadoRevision) {
+                            "rechazada" -> {
+                                val motivo = document.getString("motivoRechazo") ?: "No cumple con las reglas de Truekita."
+                                "Este producto fue rechazado por el bot.\n\nMotivo: $motivo"
+                            }
+
+                            "pendiente" -> {
+                                "Este producto todavía está pendiente de revisión."
+                            }
+
+                            else -> {
+                                "Este producto no está aprobado para mostrarse."
+                            }
+                        }
+
+                        producto = null
+                    } else if (estadoProducto != "disponible") {
+                        error = "Este producto ya no está disponible."
+                        producto = null
+                    } else {
+                        producto = ProductoDetalleDb(
+                            id = document.getString("id") ?: document.id,
+                            titulo = document.getString("titulo") ?: "",
+                            condicion = document.getString("condicion") ?: "",
+                            tipo = document.getString("tipo") ?: "",
+                            precio = document.getString("precio") ?: "",
+                            zonaEntrega = document.getString("zonaEntrega") ?: "",
+                            imagenUrl = document.getString("imagenUrl") ?: "",
+                            vendedorCorreo = document.getString("vendedorCorreo") ?: "",
+                            estado = estadoProducto,
+                            estadoRevision = estadoRevision,
+                            motivoRechazo = document.getString("motivoRechazo") ?: ""
+                        )
+                    }
                 } else {
                     error = "El producto ya no existe"
                 }
@@ -143,15 +172,49 @@ fun ProductDetailScreen(
 
                 error != null -> {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(20.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = error ?: "Error desconocido",
-                            color = Color.Red,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(16.dp)
-                        )
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(18.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color.White
+                            )
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(22.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = error ?: "Error desconocido",
+                                    color = Color.Red,
+                                    textAlign = TextAlign.Center,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+
+                                Spacer(modifier = Modifier.height(18.dp))
+
+                                Button(
+                                    onClick = {
+                                        navController.popBackStack()
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFF81C784)
+                                    ),
+                                    shape = RoundedCornerShape(14.dp)
+                                ) {
+                                    Text(
+                                        text = "Regresar",
+                                        color = Color.Black,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -274,6 +337,12 @@ fun ProductDetailScreen(
                                     icon = Icons.Default.CheckCircle,
                                     label = "Estado",
                                     value = item.estado.ifBlank { "disponible" }
+                                )
+
+                                ProductDetailRow(
+                                    icon = Icons.Default.CheckCircle,
+                                    label = "Revisión",
+                                    value = "Aprobado por el bot"
                                 )
                             }
                         }

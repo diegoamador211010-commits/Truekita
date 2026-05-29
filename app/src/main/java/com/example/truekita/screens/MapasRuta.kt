@@ -1,5 +1,8 @@
 package com.example.truekita.screens
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -13,6 +16,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.EventSeat
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Route
 import androidx.compose.material3.*
@@ -21,7 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -192,7 +195,9 @@ fun MapasRuta(
                 route != null -> {
                     val item = route!!
 
-                    val routePosition = if (item.latitud != 0.0 || item.longitud != 0.0) {
+                    val tieneCoordenadas = item.latitud != 0.0 || item.longitud != 0.0
+
+                    val routePosition = if (tieneCoordenadas) {
                         LatLng(item.latitud, item.longitud)
                     } else {
                         LatLng(20.6597, -103.3496)
@@ -227,13 +232,13 @@ fun MapasRuta(
                                     isMyLocationEnabled = false
                                 ),
                                 uiSettings = MapUiSettings(
-                                    zoomControlsEnabled = false,
-                                    scrollGesturesEnabled = false,
-                                    zoomGesturesEnabled = false,
+                                    zoomControlsEnabled = true,
+                                    scrollGesturesEnabled = true,
+                                    zoomGesturesEnabled = true,
                                     tiltGesturesEnabled = false,
-                                    rotationGesturesEnabled = false,
+                                    rotationGesturesEnabled = true,
                                     myLocationButtonEnabled = false,
-                                    mapToolbarEnabled = false
+                                    mapToolbarEnabled = true
                                 )
                             ) {
                                 Marker(
@@ -242,6 +247,53 @@ fun MapasRuta(
                                     snippet = item.ubicacionNombre.ifBlank { "Punto de salida" }
                                 )
                             }
+                        }
+
+                        Button(
+                            onClick = {
+                                if (tieneCoordenadas) {
+                                    abrirUbicacionEnGoogleMaps(
+                                        context = context,
+                                        latitud = item.latitud,
+                                        longitud = item.longitud,
+                                        etiqueta = item.ubicacionNombre.ifBlank {
+                                            item.trayecto.ifBlank { "Ruta Truekita" }
+                                        }
+                                    )
+                                } else if (item.trayecto.isNotBlank()) {
+                                    abrirBusquedaEnGoogleMaps(
+                                        context = context,
+                                        busqueda = item.trayecto
+                                    )
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "Esta ruta no tiene ubicación registrada",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(54.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = darkBlue
+                            ),
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Map,
+                                contentDescription = null,
+                                tint = Color.White
+                            )
+
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            Text(
+                                text = "Abrir en Google Maps",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold
+                            )
                         }
 
                         Card(
@@ -412,5 +464,53 @@ fun RouteDetailInfoRow(
                 fontWeight = FontWeight.Medium
             )
         }
+    }
+}
+
+fun abrirUbicacionEnGoogleMaps(
+    context: Context,
+    latitud: Double,
+    longitud: Double,
+    etiqueta: String
+) {
+    val etiquetaCodificada = Uri.encode(etiqueta)
+
+    val uri = Uri.parse(
+        "geo:$latitud,$longitud?q=$latitud,$longitud($etiquetaCodificada)"
+    )
+
+    val intent = Intent(Intent.ACTION_VIEW, uri)
+    intent.setPackage("com.google.android.apps.maps")
+
+    try {
+        context.startActivity(intent)
+    } catch (e: Exception) {
+        val webUri = Uri.parse(
+            "https://www.google.com/maps/search/?api=1&query=$latitud,$longitud"
+        )
+
+        val webIntent = Intent(Intent.ACTION_VIEW, webUri)
+        context.startActivity(webIntent)
+    }
+}
+
+fun abrirBusquedaEnGoogleMaps(
+    context: Context,
+    busqueda: String
+) {
+    val busquedaCodificada = Uri.encode(busqueda)
+
+    val uri = Uri.parse(
+        "https://www.google.com/maps/search/?api=1&query=$busquedaCodificada"
+    )
+
+    val intent = Intent(Intent.ACTION_VIEW, uri)
+    intent.setPackage("com.google.android.apps.maps")
+
+    try {
+        context.startActivity(intent)
+    } catch (e: Exception) {
+        val webIntent = Intent(Intent.ACTION_VIEW, uri)
+        context.startActivity(webIntent)
     }
 }

@@ -60,6 +60,7 @@ import com.example.truekita.R
 import com.example.truekita.components.AppTopBar
 import com.example.truekita.components.BottomNavBar
 import com.example.truekita.navigation.Screen
+import com.example.truekita.utils.BotModerador
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -371,6 +372,26 @@ fun PublishProductScreen(
                                 return@Button
                             }
 
+                            val precioConvertido = price.trim().toDoubleOrNull()
+
+                            if (precioConvertido == null) {
+                                Toast.makeText(
+                                    context,
+                                    "Ingresa un precio válido, solo números",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                return@Button
+                            }
+
+                            if (precioConvertido < 0) {
+                                Toast.makeText(
+                                    context,
+                                    "El precio no puede ser negativo",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                return@Button
+                            }
+
                             if (selectedImageUri == null) {
                                 Toast.makeText(
                                     context,
@@ -378,6 +399,19 @@ fun PublishProductScreen(
                                     Toast.LENGTH_SHORT
                                 ).show()
                                 return@Button
+                            }
+
+                            val resultadoBot = BotModerador.revisarPublicacion(
+                                titulo = title.trim(),
+                                descripcion = "Condición: $condition. Tipo: $type. Zona: $zonaEntrega.",
+                                categoria = type,
+                                precio = precioConvertido
+                            )
+
+                            val estadoRevisionFinal = if (resultadoBot.aceptada) {
+                                "aceptada"
+                            } else {
+                                "rechazada"
                             }
 
                             uploading = true
@@ -400,6 +434,7 @@ fun PublishProductScreen(
                                                 "condicion" to condition,
                                                 "tipo" to type,
                                                 "precio" to price.trim(),
+                                                "precioNumero" to precioConvertido,
                                                 "zonaEntrega" to zonaEntrega,
                                                 "fechaEntrega" to fechaEntrega,
                                                 "horaEntrega" to horaEntrega,
@@ -407,10 +442,15 @@ fun PublishProductScreen(
                                                 "vendedorUid" to currentUser.uid,
                                                 "vendedorCorreo" to (currentUser.email ?: ""),
                                                 "fechaPublicacion" to Timestamp.now(),
+
+                                                // Estado general del producto
                                                 "estado" to "disponible",
-                                                "estadoRevision" to "pendiente",
-                                                "motivoRechazo" to "",
-                                                "fechaRevision" to null
+
+                                                // Resultado del bot moderador
+                                                "estadoRevision" to estadoRevisionFinal,
+                                                "motivoRechazo" to resultadoBot.motivo,
+                                                "fechaRevision" to Timestamp.now(),
+                                                "revisadoPor" to "BotModerador"
                                             )
 
                                             db.collection("productos")
@@ -419,11 +459,19 @@ fun PublishProductScreen(
                                                 .addOnSuccessListener {
                                                     uploading = false
 
-                                                    Toast.makeText(
-                                                        context,
-                                                        "Producto enviado a revisión del administrador",
-                                                        Toast.LENGTH_LONG
-                                                    ).show()
+                                                    if (resultadoBot.aceptada) {
+                                                        Toast.makeText(
+                                                            context,
+                                                            "Producto publicado correctamente. El bot lo aprobó.",
+                                                            Toast.LENGTH_LONG
+                                                        ).show()
+                                                    } else {
+                                                        Toast.makeText(
+                                                            context,
+                                                            "Producto rechazado por el bot: ${resultadoBot.motivo}",
+                                                            Toast.LENGTH_LONG
+                                                        ).show()
+                                                    }
 
                                                     navController.navigate(Screen.Home.route) {
                                                         popUpTo(0) {
@@ -472,7 +520,7 @@ fun PublishProductScreen(
                     ) {
                         Text(
                             text = if (uploading) {
-                                "Enviando a revisión..."
+                                "Revisando y publicando..."
                             } else {
                                 stringResource(id = R.string.publish_action)
                             },
@@ -484,7 +532,7 @@ fun PublishProductScreen(
 
                 item {
                     Text(
-                        text = "Tu publicación será revisada por un administrador antes de aparecer en la página principal.",
+                        text = "Tu publicación será revisada automáticamente por el bot antes de aparecer en la página principal.",
                         fontSize = 10.sp,
                         color = Color.Gray,
                         textAlign = TextAlign.Center,

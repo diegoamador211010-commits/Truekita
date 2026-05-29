@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.Article
+import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.SupportAgent
 import androidx.compose.material3.Button
@@ -61,7 +62,7 @@ fun AdminHomeScreen(
                 )
 
                 Text(
-                    text = "Gestiona tickets, publicaciones y viajes",
+                    text = "Gestiona chats, tickets, publicaciones y viajes",
                     fontSize = 14.sp,
                     color = Color.DarkGray
                 )
@@ -76,6 +77,17 @@ fun AdminHomeScreen(
             iconType = "tickets",
             onClick = {
                 navController.navigate(Screen.AdminTickets.route)
+            }
+        )
+
+        Spacer(modifier = Modifier.height(14.dp))
+
+        AdminOptionCard(
+            title = "Chats de usuarios",
+            subtitle = "Ver conversaciones enviadas al administrador",
+            iconType = "chats",
+            onClick = {
+                navController.navigate(Screen.AdminChats.route)
             }
         )
 
@@ -141,6 +153,7 @@ fun AdminOptionCard(
 
     val icon = when (iconType) {
         "tickets" -> Icons.Default.SupportAgent
+        "chats" -> Icons.Default.Chat
         "products" -> Icons.Default.Article
         else -> Icons.Default.DirectionsCar
     }

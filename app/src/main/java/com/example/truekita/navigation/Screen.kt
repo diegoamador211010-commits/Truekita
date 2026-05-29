@@ -17,6 +17,7 @@ sealed class Screen(val route: String) {
     object AdminTickets : Screen("admin_tickets_screen")
     object AdminProducts : Screen("admin_products_screen")
     object AdminRoutes : Screen("admin_routes_screen")
+    object AdminChats : Screen("admin_chats_screen")
 
     // --- PRINCIPALES ---
     object Home : Screen("home_screen")

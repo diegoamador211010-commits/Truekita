@@ -10,6 +10,7 @@ import com.example.truekita.screens.admin.AdminHomeScreen
 import com.example.truekita.screens.admin.AdminProductsScreen
 import com.example.truekita.screens.admin.AdminRoutesScreen
 import com.example.truekita.screens.admin.AdminTicketsScreen
+import com.example.truekita.screens.admin.AdminChatsScreen
 
 @Composable
 fun NavGraph(
@@ -30,6 +31,7 @@ fun NavGraph(
         composable(Screen.Login.route) {
             LoginScreen(navController)
         }
+
 
         composable(Screen.ForgotPassword.route) {
             ForgotPasswordScreen(navController)
@@ -85,6 +87,10 @@ fun NavGraph(
 
         composable(Screen.AdminRoutes.route) {
             AdminRoutesScreen(navController)
+        }
+
+        composable(Screen.AdminChats.route) {
+            AdminChatsScreen(navController)
         }
 
         // --- PRINCIPALES ---

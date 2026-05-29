@@ -28,6 +28,7 @@ import com.example.truekita.R
 import com.example.truekita.components.AppTopBar
 import com.example.truekita.components.BottomNavBar
 import com.example.truekita.navigation.Screen
+import com.example.truekita.utils.BotModerador
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -43,7 +44,10 @@ data class MyPostProductDb(
     val imagenUrl: String = "",
     val vendedorUid: String = "",
     val vendedorCorreo: String = "",
-    val estado: String = ""
+    val estado: String = "",
+    val estadoRevision: String = "",
+    val motivoRechazo: String = "",
+    val revisadoPor: String = ""
 )
 
 @Composable
@@ -105,7 +109,10 @@ fun MyPostsScreen(navController: NavController) {
                                 imagenUrl = document.getString("imagenUrl") ?: "",
                                 vendedorUid = document.getString("vendedorUid") ?: "",
                                 vendedorCorreo = document.getString("vendedorCorreo") ?: "",
-                                estado = document.getString("estado") ?: "disponible"
+                                estado = document.getString("estado") ?: "disponible",
+                                estadoRevision = document.getString("estadoRevision") ?: "pendiente",
+                                motivoRechazo = document.getString("motivoRechazo") ?: "",
+                                revisadoPor = document.getString("revisadoPor") ?: ""
                             )
                         } ?: emptyList()
 
@@ -125,23 +132,58 @@ fun MyPostsScreen(navController: NavController) {
                 productToEdit = null
             },
             onSave = { titulo, condicion, tipo, precio, estado ->
+                val precioConvertido = precio.trim().toDoubleOrNull()
+
+                if (precioConvertido == null) {
+                    Toast.makeText(
+                        context,
+                        "Ingresa un precio válido",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@EditProductDialog
+                }
+
+                val resultadoBot = BotModerador.revisarPublicacion(
+                    titulo = titulo.trim(),
+                    descripcion = "Condición: $condicion. Tipo: $tipo. Zona: ${product.zonaEntrega}.",
+                    categoria = tipo,
+                    precio = precioConvertido
+                )
+
+                val estadoRevisionFinal = if (resultadoBot.aceptada) {
+                    "aceptada"
+                } else {
+                    "rechazada"
+                }
+
                 db.collection("productos")
                     .document(product.id)
                     .update(
                         mapOf(
-                            "titulo" to titulo,
+                            "titulo" to titulo.trim(),
                             "condicion" to condicion,
                             "tipo" to tipo,
-                            "precio" to precio,
+                            "precio" to precio.trim(),
+                            "precioNumero" to precioConvertido,
                             "estado" to estado,
-                            "fechaActualizacion" to Timestamp.now()
+                            "estadoRevision" to estadoRevisionFinal,
+                            "motivoRechazo" to resultadoBot.motivo,
+                            "fechaRevision" to Timestamp.now(),
+                            "fechaActualizacion" to Timestamp.now(),
+                            "revisadoPor" to "BotModerador"
                         )
                     )
                     .addOnSuccessListener {
+                        val mensaje = if (resultadoBot.aceptada) {
+                            "Publicación actualizada y aprobada por el bot"
+                        } else {
+                            "Publicación actualizada, pero rechazada por el bot"
+                        }
+
                         Toast.makeText(
                             context,
-                            "Publicación actualizada",
-                            Toast.LENGTH_SHORT
+                            mensaje,
+                            Toast.LENGTH_LONG
                         ).show()
 
                         productToEdit = null
@@ -243,7 +285,7 @@ fun MyPostsScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = stringResource(id = R.string.active_posts),
+                text = "Tus publicaciones y revisión del bot",
                 fontSize = 14.sp,
                 color = Color.Gray,
                 modifier = Modifier.padding(bottom = 8.dp)
@@ -301,9 +343,17 @@ fun MyPostsScreen(navController: NavController) {
                             MyPostProductCard(
                                 product = product,
                                 onDetailsClick = {
-                                    navController.navigate(
-                                        "${Screen.ProductDetail.route}/${product.id}"
-                                    )
+                                    if (product.estadoRevision == "aceptada" && product.estado == "disponible") {
+                                        navController.navigate(
+                                            "${Screen.ProductDetail.route}/${product.id}"
+                                        )
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "Solo puedes ver detalles públicos cuando la publicación esté aceptada y disponible",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
                                 },
                                 onEditClick = {
                                     productToEdit = product
@@ -327,6 +377,20 @@ fun MyPostProductCard(
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit
 ) {
+    val revisionColor = when (product.estadoRevision) {
+        "aceptada" -> Color(0xFF2E7D32)
+        "rechazada" -> Color.Red
+        "pendiente" -> Color(0xFFFF9800)
+        else -> Color.Gray
+    }
+
+    val revisionText = when (product.estadoRevision) {
+        "aceptada" -> "Aceptada por el bot"
+        "rechazada" -> "Rechazada por el bot"
+        "pendiente" -> "Pendiente de revisión"
+        else -> "Sin revisión"
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(18.dp),
@@ -400,12 +464,59 @@ fun MyPostProductCard(
                 )
             }
 
+            Spacer(modifier = Modifier.height(8.dp))
+
             Text(
-                text = "Estado: ${product.estado}",
+                text = "Estado del producto: ${product.estado}",
                 fontSize = 13.sp,
                 color = Color(0xFF2E7D32),
                 fontWeight = FontWeight.Bold
             )
+
+            Text(
+                text = "Revisión: $revisionText",
+                fontSize = 13.sp,
+                color = revisionColor,
+                fontWeight = FontWeight.Bold
+            )
+
+            if (product.estadoRevision == "rechazada" && product.motivoRechazo.isNotBlank()) {
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFFFFEBEE)
+                    )
+                ) {
+                    Text(
+                        text = "Motivo: ${product.motivoRechazo}",
+                        fontSize = 13.sp,
+                        color = Color.Red,
+                        modifier = Modifier.padding(10.dp)
+                    )
+                }
+            }
+
+            if (product.estadoRevision == "aceptada") {
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFFE8F5E9)
+                    )
+                ) {
+                    Text(
+                        text = "Esta publicación ya puede aparecer en la página principal.",
+                        fontSize = 13.sp,
+                        color = Color(0xFF2E7D32),
+                        modifier = Modifier.padding(10.dp)
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(12.dp))
 

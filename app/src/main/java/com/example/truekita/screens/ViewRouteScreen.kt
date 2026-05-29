@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.EventSeat
 import androidx.compose.material.icons.filled.LocationOn
@@ -34,7 +35,6 @@ import com.example.truekita.navigation.Screen
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 
 data class ViewRouteData(
     val id: String = "",
@@ -67,7 +67,6 @@ fun ViewRouteScreen(navController: NavController) {
 
     DisposableEffect(Unit) {
         val listener = db.collection("rutas")
-            .orderBy("fechaPublicacion", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, error ->
 
                 if (error != null) {
@@ -82,22 +81,26 @@ fun ViewRouteScreen(navController: NavController) {
                     return@addSnapshotListener
                 }
 
-                routes = snapshot?.documents?.map { document ->
-                    ViewRouteData(
-                        id = document.id,
-                        nombreConductor = document.getString("nombreConductor") ?: "",
-                        trayecto = document.getString("trayecto") ?: "",
-                        horaSalida = document.getString("horaSalida") ?: "",
-                        lugaresDisponibles = document.getString("lugaresDisponibles") ?: "",
-                        tipo = document.getString("tipo") ?: "",
-                        ubicacionNombre = document.getString("ubicacionNombre") ?: "",
-                        latitud = document.getDouble("latitud") ?: 0.0,
-                        longitud = document.getDouble("longitud") ?: 0.0,
-                        estado = document.getString("estado") ?: "disponible",
-                        conductorUid = document.getString("conductorUid") ?: "",
-                        conductorCorreo = document.getString("conductorCorreo") ?: ""
-                    )
-                } ?: emptyList()
+                routes = snapshot?.documents
+                    ?.sortedByDescending { document ->
+                        document.getTimestamp("fechaPublicacion")?.toDate()?.time ?: 0L
+                    }
+                    ?.map { document ->
+                        ViewRouteData(
+                            id = document.id,
+                            nombreConductor = document.getString("nombreConductor") ?: "",
+                            trayecto = document.getString("trayecto") ?: "",
+                            horaSalida = document.getString("horaSalida") ?: "",
+                            lugaresDisponibles = document.getString("lugaresDisponibles") ?: "",
+                            tipo = document.getString("tipo") ?: "",
+                            ubicacionNombre = document.getString("ubicacionNombre") ?: "",
+                            latitud = document.getDouble("latitud") ?: 0.0,
+                            longitud = document.getDouble("longitud") ?: 0.0,
+                            estado = document.getString("estado") ?: "disponible",
+                            conductorUid = document.getString("conductorUid") ?: "",
+                            conductorCorreo = document.getString("conductorCorreo") ?: ""
+                        )
+                    } ?: emptyList()
 
                 cargando = false
             }
@@ -122,7 +125,7 @@ fun ViewRouteScreen(navController: NavController) {
         if (route.conductorUid.isBlank()) {
             Toast.makeText(
                 context,
-                "Esta ruta no tiene conductor asignado. Revisa conductorUid en Firebase.",
+                "Esta ruta no tiene conductor asignado",
                 Toast.LENGTH_LONG
             ).show()
             return
@@ -270,6 +273,20 @@ fun ViewRouteScreen(navController: NavController) {
         },
         bottomBar = {
             BottomNavBar(navController = navController)
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    navController.navigate(Screen.PublishRoute.route)
+                },
+                containerColor = Color(0xFF0D47A1),
+                contentColor = Color.White
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Agregar ruta"
+                )
+            }
         }
     ) { padding ->
 
@@ -287,13 +304,14 @@ fun ViewRouteScreen(navController: NavController) {
             }
 
             routes.isEmpty() -> {
-                Box(
+                Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(padding)
                         .background(Color(0xFFE3F2FD))
                         .padding(24.dp),
-                    contentAlignment = Alignment.Center
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
                     Text(
                         text = "Aún no hay rutas publicadas",
@@ -301,6 +319,35 @@ fun ViewRouteScreen(navController: NavController) {
                         color = Color.Gray,
                         textAlign = TextAlign.Center
                     )
+
+                    Spacer(modifier = Modifier.height(18.dp))
+
+                    Button(
+                        onClick = {
+                            navController.navigate(Screen.PublishRoute.route)
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF0D47A1)
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = null,
+                            tint = Color.White
+                        )
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Text(
+                            text = "Agregar ruta",
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
 
@@ -314,12 +361,15 @@ fun ViewRouteScreen(navController: NavController) {
                     verticalArrangement = Arrangement.spacedBy(14.dp),
                     contentPadding = PaddingValues(
                         top = 16.dp,
-                        bottom = 24.dp
+                        bottom = 90.dp
                     )
                 ) {
                     item {
                         RouteHeaderCard(
-                            totalRoutes = routes.size
+                            totalRoutes = routes.size,
+                            onAddRoute = {
+                                navController.navigate(Screen.PublishRoute.route)
+                            }
                         )
                     }
 
@@ -342,7 +392,8 @@ fun ViewRouteScreen(navController: NavController) {
 
 @Composable
 fun RouteHeaderCard(
-    totalRoutes: Int
+    totalRoutes: Int,
+    onAddRoute: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -352,41 +403,73 @@ fun RouteHeaderCard(
         ),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
-        Row(
-            modifier = Modifier.padding(18.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier.padding(18.dp)
         ) {
-            Surface(
-                modifier = Modifier.size(52.dp),
-                shape = CircleShape,
-                color = Color(0xFFE3F2FD)
+            Row(
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Box(
-                    contentAlignment = Alignment.Center
+                Surface(
+                    modifier = Modifier.size(52.dp),
+                    shape = CircleShape,
+                    color = Color(0xFFE3F2FD)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.DirectionsCar,
-                        contentDescription = null,
-                        tint = Color(0xFF0D47A1),
-                        modifier = Modifier.size(30.dp)
+                    Box(
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.DirectionsCar,
+                            contentDescription = null,
+                            tint = Color(0xFF0D47A1),
+                            modifier = Modifier.size(30.dp)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.width(14.dp))
+
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = "Rutas disponibles",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp,
+                        color = Color.Black
+                    )
+
+                    Text(
+                        text = "$totalRoutes rutas publicadas por usuarios",
+                        fontSize = 13.sp,
+                        color = Color.Gray
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.width(14.dp))
+            Spacer(modifier = Modifier.height(14.dp))
 
-            Column {
-                Text(
-                    text = "Rutas disponibles",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    color = Color.Black
+            Button(
+                onClick = onAddRoute,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF0D47A1)
+                ),
+                shape = RoundedCornerShape(14.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = null,
+                    tint = Color.White
                 )
 
+                Spacer(modifier = Modifier.width(8.dp))
+
                 Text(
-                    text = "$totalRoutes rutas publicadas por usuarios",
-                    fontSize = 13.sp,
-                    color = Color.Gray
+                    text = "Agregar nueva ruta",
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
